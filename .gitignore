@@ -1,0 +1,16 @@
+**/*.aux
+**/*.bbl
+**/*.blg
+**/*.fdb_latexmk
+**/*.fls
+**/*.log
+**/*.mp4
+**/*.out
+**/*.synctex.gz
+**/*.toc
+**/*.nav
+**/*.snm
+**/*.slxc
+**/*.slx.original
+**/*.mat
+**/slprj/
