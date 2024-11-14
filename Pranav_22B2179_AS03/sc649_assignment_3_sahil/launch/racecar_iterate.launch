@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="world_name" default="racecar" />
+  <arg name="gui" default="true" />
+  <arg name="run_camera" default="false" />
+  <arg name="k1" default="10" /> 
+  <arg name="k2" default="10" /> 
+  <arg name="A" default="8" />   
+  <arg name="csv_path" default="/home/luffy/ros_ws/data/trajectory_data.csv" /> 
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find racecar_gazebo)/worlds/$(arg world_name).world"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro '$(find racecar_description)/urdf/racecar.xacro'" />
+
+  <node name="racecar_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-urdf -param robot_description -model racecar -z 0.05" />
+
+  <include file="$(find racecar_control)/launch/racecar_control.launch" ns="/"/>
+
+  <arg name="racecar_version" default="racecar-v2" />
+  <include file="$(find racecar)/launch/mux.launch" ns="vesc" />
+
+  <node name="better_odom" pkg="topic_tools" type="relay"
+        args="/vesc/odom /pf/pose/odom" />
+
+  <node name="servocommands" pkg ="racecar_control" type="servo_commands.py" output="screen"/>
+  <node name="maincontroller" pkg="sc649_assignment_3" type="assignment3_feedback_control_iterate.py" output="screen"
+        args="--k1 $(arg k1) --k2 $(arg k2) --A $(arg A) --csv_path $(arg csv_path)" />
+
+</launch>
